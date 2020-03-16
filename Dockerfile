@@ -598,6 +598,15 @@ curl -L https://iterm2.com/shell_integration/install_shell_integration_and_utili
 WORKDIR $PSRHOME
 RUN rm -rf ./*.bz2 ./*.gz ./*.xz ./*.ztar ./*.zip
 
+# Installing a nice vimrc file
+WORKDIR $PSRHOME
+RUN git clone --depth=1 https://github.com/aparthas3112/vimrc.git ~/.vim_runtime
+RUN sh ~/.vim_runtime/install_awesome_vimrc.sh 
+
+
+#Installing bokeh sampledata
+WORKDIR $PSRHOME
+RUN bokeh sampledata
 
 # Put in file with all environmental variables
 WORKDIR $HOME
@@ -734,4 +743,5 @@ USER root
 RUN sed 's/X11Forwarding yes/X11Forwarding yes\nX11UseLocalhost no/' -i /etc/ssh/sshd_config
 RUN updatedb
 EXPOSE 22
+EXPOSE 5006
 CMD ["/usr/sbin/sshd", "-D"]
