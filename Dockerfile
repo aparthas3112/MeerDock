@@ -609,7 +609,6 @@ WORKDIR $PSRHOME
 RUN bokeh sampledata
 
 #Creating a directory for custom TPA installs
-RUN git config --global url."https://d223690a696cef0dc50f4c4eeb5447cbf36a4ac7:@github.com/".insteadOf "https://github.com/"
 WORKDIR $HOME
 RUN mkdir TPA
 WORKDIR $HOME/TPA
