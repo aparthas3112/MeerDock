@@ -608,6 +608,13 @@ RUN sh ~/.vim_runtime/install_awesome_vimrc.sh
 WORKDIR $PSRHOME
 RUN bokeh sampledata
 
+#Creating a directory for custom TPA installs
+RUN git config --global url."https://d1bc40f0ec22cc8dabddf5ef2593e7a79737d39a:@github.com/".insteadOf "https://github.com/"
+WORKDIR $HOME
+RUN mkdir TPA
+WORKDIR $HOME/TPA
+RUN git clone https://github.com/aparthas3112/TPA_Classifier.git 
+
 # Put in file with all environmental variables
 WORKDIR $HOME
 RUN echo "" >> .bashrc && \
