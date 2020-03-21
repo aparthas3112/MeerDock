@@ -631,7 +631,6 @@ RUN make
 WORKDIR $PSRHOME/MultiNest/lib
 RUN ln -s libmultinest_mpi.so libnest3.so
 
-USER psr
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"$PSRHOME/MultiNest/lib" \
     CFLAGS="$CFLAGS -I$PSRHOME/MultiNest/include" \
     CPPFLAGS="$CPPFLAGS -I$PSRHOME/MultiNest/include" \ 
@@ -643,8 +642,6 @@ RUN git clone https://github.com/aparthas3112/TempoNest.git
 WORKDIR $PSRHOME/TempoNest/PolyChord
 RUN make
 RUN mv src/libchord.a $PSRHOME/MultiNest/lib/
-
-RUN ls $PSRHOME/MultiNest/lib/
 
 WORKDIR $PSRHOME/TempoNest
 RUN chmod +x autogen.sh
