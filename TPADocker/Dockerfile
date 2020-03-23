@@ -36,6 +36,8 @@ echo 'deb http://mirrors.kernel.org/ubuntu/ bionic main multiverse' >> /etc/apt/
     apt-get -y update --fix-missing && \
     apt-get -y upgrade
 
+RUN apt-get update
+
 RUN apt-get -y install \
     apt-utils \
     autoconf \
@@ -207,16 +209,15 @@ RUN apt-get -y install \
     wcslib-tools \
     wget \
     zlib1g-dev\
-    zsh
-
-#Extra modules added by Vivek
-RUN apt-get -y install \
-    htop\
-    latex2html\
-    libpng-dev\
+    zsh \ 
+    libfontconfig1 \
+    libfontconfig1-dev \  
+    htop \
+    latex2html \
+    libpng-dev \
     zlib1g-dev \
     software-properties-common \
-    openjdk-8-jdk\
+    openjdk-8-jdk \
     python3 
 
 # Install python modules
@@ -255,9 +256,9 @@ RUN pip install pip -U && \
     pip install scikit-learn -U && \
     pip install corner -U && \
     pip install bokeh -U && \ 
-    pip install psrqpy -U 
+    pip install psrqpy -U && \
+    pip install webscreenshot -U 
     
-
 # Switch account to psr
 USER psr
 
@@ -325,8 +326,9 @@ RUN wget --no-check-certificate https://www.imcce.fr/content/medias/recherche/eq
     git clone https://github.com/ajameson/pfits.git && \
     git clone git://git.code.sf.net/p/psrdada/code && \
     git clone https://github.com/straten/epsic.git && \
-    git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
-
+    git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto" && \
+    wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-1.9.8-linux-x86_64.tar.bz2 && \
+    tar -xvvf phantomjs-1.9.8-linux-x86_64.tar.bz2
 
 # PGPLOT
 ENV PGPLOT_DIR="/usr/lib/pgplot5" \
@@ -399,9 +401,12 @@ RUN touch meerkat2gps.clk && \
     echo "50155.00000 0.0" >> meerkat2gps.clk && \
     echo "58000.00000 0.0" >> meerkat2gps.clk
 
-
+#EPSIC
 ENV EPSIC=$PSRHOME"/epsic"
 WORKDIR $EPSIC/src
+
+#Temporary fix until Willem fixes the new bugs
+RUN git checkout e9a2ac1085756e037b4870f7160c183e045523e5
 
 RUN ./bootstrap && \
     ./configure --prefix=$PSRHOME"/epsic/install" && make -j $(nproc) && make &&  make install > test
@@ -614,7 +619,13 @@ RUN mkdir TPA
 WORKDIR $HOME/TPA
 RUN git clone https://github.com/aparthas3112/TPA_Classifier.git 
 
+#Linking phantomjs to /usr/local/share
+USER root
+RUN mv $PSRHOME/phantomjs-1.9.8-linux-x86_64 /usr/local/share
+RUN ln -sf /usr/local/share/phantomjs-1.9.8-linux-x86_64/bin/phantomjs /usr/local/bin
+
 # Put in file with all environmental variables
+USER psr
 WORKDIR $HOME
 RUN echo "" >> .bashrc && \
     echo "if [ -e \$HOME/.mysetenv.bash ]; then" >> .bashrc && \
