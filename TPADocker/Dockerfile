@@ -624,6 +624,17 @@ USER root
 RUN mv $PSRHOME/phantomjs-1.9.8-linux-x86_64 /usr/local/share
 RUN ln -sf /usr/local/share/phantomjs-1.9.8-linux-x86_64/bin/phantomjs /usr/local/bin
 
+#Installing selenium and google-chrome-stable
+RUN pip install selenium -U 
+WORKDIR $PSRHOME
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+RUN dpkg -i --force-depends google-chrome-stable_current_amd64.deb 
+RUN wget https://chromedriver.storage.googleapis.com/2.41/chromedriver_linux64.zip
+RUN unzip chromedriver_linux64.zip
+RUN mv chromedriver /usr/bin/chromedriver
+RUN chown root:root /usr/bin/chromedriver
+RUN chmod +x /usr/bin/chromedriver
+
 # Put in file with all environmental variables
 USER psr
 WORKDIR $HOME
@@ -761,4 +772,7 @@ RUN sed 's/X11Forwarding yes/X11Forwarding yes\nX11UseLocalhost no/' -i /etc/ssh
 RUN updatedb
 EXPOSE 22
 EXPOSE 5006
+EXPOSE 5007
+EXPOSE 5008
+EXPOSE 5009
 CMD ["/usr/sbin/sshd", "-D"]
