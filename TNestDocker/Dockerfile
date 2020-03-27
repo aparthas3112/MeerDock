@@ -225,8 +225,7 @@ RUN pip install pip -U && \
     pip install datetime -U && \
     pip install bitstring -U && \
     pip install ipython -U && \
-    pip install jupyter -U && \
-    pip install runipy -U && \
+    pip install --ignore-installed jupyter -U && \
     pip install six -U && \
     pip install numpy -U && \
     pip install scipy -U && \
