@@ -18,7 +18,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Switch account to root and adding user accounts and password
 USER root
-RUN echo "root:meerdock!" | chpasswd
+RUN echo "root:meerdock" | chpasswd
 
 # Create psr user which will be used to run commands with reduced privileges.
 RUN adduser --disabled-password --gecos 'unprivileged user' psr && \
@@ -780,8 +780,8 @@ RUN echo "" >> .bashrc && \
     echo "export PYTHONPATH=\$PYTHONPATH:\$COAST_GUARD:\$COAST_GUARD/coast_guard" >> .mysetenv.bash && \
     echo "# TempoNest" >> .mysetenv.bash && \
     echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/home/psr/software/MultiNest/lib" >> .mysetenv.bash && \ 
-    echo "export CFLAGS=\$CFLAGS -I/home/psr/software/MultiNest/include" >> .mysetenv.bash && \
-    echo "export CPPFLAGS=\$CPPFLAGS -I/home/psr/software/MultiNest/include" >> .mysetenv.bash && \
+    echo "export CFLAGS=\$CFLAGS:\$PSRHOME/MultiNest/include" >> .mysetenv.bash && \
+    echo "export CPPFLAGS=\$CPPFLAGS:\$PSRHOME/MultiNest/include" >> .mysetenv.bash && \
     echo "export MULTINEST_DIR=\$PSRHOME/MultiNest/lib" >> .mysetenv.bash && \
     echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu/openmpi/lib/" >> .mysetenv.bash && \
     /bin/bash -c "source $HOME/.bashrc"
@@ -792,4 +792,7 @@ RUN sed 's/X11Forwarding yes/X11Forwarding yes\nX11UseLocalhost no/' -i /etc/ssh
 RUN updatedb
 EXPOSE 22
 EXPOSE 5006
+EXPOSE 5007
+EXPOSE 5008
+EXPOSE 5009
 CMD ["/usr/sbin/sshd", "-D"]
