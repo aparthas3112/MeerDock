@@ -207,17 +207,16 @@ RUN apt-get -y install \
     wcslib-tools \
     wget \
     zlib1g-dev\
-    zsh
-
-#Extra modules added by Vivek
-RUN apt-get -y install \
-    htop\
-    latex2html\
-    libpng-dev\
+    zsh \
+    libfontconfig1 \
+    libfontconfig1-dev \
+    htop \
+    latex2html \
+    libpng-dev \
     zlib1g-dev \
     software-properties-common \
-    openjdk-8-jdk\
-    python3 
+    openjdk-8-jdk \
+    python3
 
 # Install python modules
 RUN pip install pip -U && \
@@ -254,7 +253,8 @@ RUN pip install pip -U && \
     pip install scikit-learn -U && \
     pip install corner -U && \
     pip install bokeh -U && \ 
-    pip install psrqpy -U 
+    pip install psrqpy -U \
+    pip install webscreenshot -U
     
 
 # Switch account to psr
@@ -324,7 +324,9 @@ RUN wget --no-check-certificate https://www.imcce.fr/content/medias/recherche/eq
     git clone https://github.com/ajameson/pfits.git && \
     git clone git://git.code.sf.net/p/psrdada/code && \
     git clone https://github.com/straten/epsic.git && \
-    git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
+    git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto" && \
+    wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-1.9.8-linux-x86_64.tar.bz2 && \
+    tar -xvvf phantomjs-1.9.8-linux-x86_64.tar.bz2    
 
 
 # PGPLOT
@@ -649,6 +651,28 @@ RUN ./configure --prefix=$PSRHOME/TempoNest
 RUN make temponest
 RUN make temponest-install
 
+#Cloning and installing libstempo
+USER root
+WORKDIR $PSRHOME
+RUN git clone https://github.com/vallis/libstempo.git
+WORKDIR $PSRHOME/libstempo
+RUN python setup.py install
+
+#Linking phantomjs to /usr/local/share
+USER root
+RUN mv $PSRHOME/phantomjs-1.9.8-linux-x86_64 /usr/local/share
+RUN ln -sf /usr/local/share/phantomjs-1.9.8-linux-x86_64/bin/phantomjs /usr/local/bin
+
+#Installing selenium and google-chrome-stable
+RUN pip install selenium -U
+WORKDIR $PSRHOME
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+RUN dpkg -i --force-depends google-chrome-stable_current_amd64.deb
+RUN wget https://chromedriver.storage.googleapis.com/2.41/chromedriver_linux64.zip
+RUN unzip chromedriver_linux64.zip
+RUN mv chromedriver /usr/bin/chromedriver
+RUN chown root:root /usr/bin/chromedriver
+RUN chmod +x /usr/bin/chromedriver
 
 # Put in file with all environmental variables
 WORKDIR $HOME

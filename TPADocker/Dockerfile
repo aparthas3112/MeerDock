@@ -405,7 +405,7 @@ ENV EPSIC=$PSRHOME"/epsic"
 WORKDIR $EPSIC/src
 
 #Temporary fix until Willem fixes the new bugs
-RUN git checkout e9a2ac1085756e037b4870f7160c183e045523e5
+#RUN git checkout e9a2ac1085756e037b4870f7160c183e045523e5
 
 RUN ./bootstrap && \
     ./configure --prefix=$PSRHOME"/epsic/install" && make -j $(nproc) && make &&  make install > test
@@ -617,6 +617,13 @@ WORKDIR $HOME
 RUN mkdir TPA
 WORKDIR $HOME/TPA
 RUN git clone https://github.com/aparthas3112/TPA_Classifier.git 
+
+#Cloning and installing libstempo
+USER root
+WORKDIR $PSRHOME
+RUN git clone https://github.com/vallis/libstempo.git
+WORKDIR $PSRHOME/libstempo
+RUN python setup.py install 
 
 #Linking phantomjs to /usr/local/share
 USER root
